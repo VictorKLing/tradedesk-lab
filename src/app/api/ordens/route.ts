@@ -27,9 +27,7 @@ export async function POST(req: Request) {
     timestamp: new Date().toISOString(),
   };
 
-  // Bug B12: push na array ERRADA (ACOES_MOCK em vez de ORDENS_MOCK)
-  // Após 3 ordens, /api/acoes retorna ações misturadas com ordens
-  ACOES_MOCK.push(ordem as any); // Bug B12: deveria ser ORDENS_MOCK.push(ordem)
+  ORDENS_MOCK.push(ordem);
 
   return NextResponse.json(ordem, { status: 201 });
 }
