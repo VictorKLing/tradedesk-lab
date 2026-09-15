@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { ACOES_MOCK } from "@/lib/mocks";
+import { normalizeAcao } from "@/lib/normalizeAcao";
+
+
 
 const TICKERS = "PETR4,VALE3,ITUB4,MGLU3,BBDC4";
 
@@ -17,7 +20,8 @@ export async function GET() {
     });
     if (!res.ok) throw new Error("brapi offline");
     const data = await res.json();
-    return NextResponse.json(data.results); // retorna brapi raw
+    return NextResponse.json(normalizeAcao(data.results[0]));
+  
   } catch {
     // brapi indisponivel ou token nao configurado — retornando dados mock
     return NextResponse.json({
