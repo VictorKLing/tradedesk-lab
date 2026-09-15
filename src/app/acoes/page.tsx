@@ -1,26 +1,17 @@
-"use client";
-// Bug B7: página de listagem como Client Component usando useEffect
-// Deveria ser um Server Component async buscando os dados diretamente
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Acao } from "@/types/acao";
 
-export default function AcoesPage() {
-  const [acoes, setAcoes] = useState<Acao[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function AcoesPage() {
+  let acoes: Acao[] = [];
 
-  useEffect(() => {
-    fetch("/api/acoes")
-      .then(r => r.json())
-      .then(data => { setAcoes(data); setLoading(false); });
-  }, []);
-
-  if (loading) return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "2rem", color: "#888" }}>
-      Carregando cotações...
-    </div>
-  );
+  try {
+    const res = await fetch("http://localhost:3000/api/acoes", { cache: "no-store" });
+    const data = await res.json();
+    acoes = Array.isArray(data) ? data : data.acoes ?? [];
+  } catch {
+    acoes = [];
+  }
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "2rem" }}>
