@@ -11,12 +11,11 @@ import type { Acao } from "@/types/acao";
 interface Props { acao: Acao; }
 
 export default function BoletaForm({ acao }: Props) {
-  const [quantidade, setQuantidade] = useState(""); // Bug B14: string, não number
+  const [quantidade, setQuantidade] = useState<number>(0);
   const [enviado, setEnviado] = useState(false);
 
-  // Bug B2: fetch desnecessário — acao.preco já chegou via props do Server Component
-  // Isso força um round-trip ao servidor para dado que já estava disponível
-  const total = Number(quantidade) * acao.preco || 0;
+  const total = quantidade * acao.preco || 0;
+
 
   async function handleCompra() {
     await fetch("/api/ordens", {
@@ -24,7 +23,7 @@ export default function BoletaForm({ acao }: Props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ticker: acao.ticker,
-        quantidade: Number(quantidade),
+        quantidade,
         preco: acao.preco,  // Bug B13: pode ser undefined quando brapi está online
         total,
         tipo: "compra",
@@ -58,8 +57,8 @@ export default function BoletaForm({ acao }: Props) {
           <label style={{ fontSize: "0.75rem", color: "#888", display: "block", marginBottom: "0.25rem" }}>Quantidade</label>
           <input
             type="number"
-            value={quantidade}
-            onChange={e => setQuantidade(e.target.value)} // Bug B14: e.target.value é string
+            value={quantidade || ""}
+            onChange={e => setQuantidade(Number(e.target.value))}
             placeholder="Ex: 100"
             min="1"
             style={{ width: "100%", background: "#0d0d0d", border: "1px solid #333", color: "#e5e5e5", padding: "0.5rem", borderRadius: 4, fontFamily: "monospace" }}
